@@ -9,6 +9,8 @@ public class Enemy : MonoBehaviour
 
     private int waypointIndex = 0;
 
+    public int reward = 5;
+
     void Start()
     {
         currentHealth = maxHealth;
@@ -58,6 +60,8 @@ public class Enemy : MonoBehaviour
 
     void Die()
     {
+        MoneyManager.instance.AddMoney(reward);
         Destroy(gameObject);
     }
+
 }
