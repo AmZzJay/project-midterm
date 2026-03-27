@@ -4,7 +4,10 @@ public class Enemy : MonoBehaviour
 {
     public int maxHealth = 100;
     private int currentHealth;
+
     public float speed = 3f;
+
+    private int waypointIndex = 0;
 
     void Start()
     {
@@ -13,19 +16,39 @@ public class Enemy : MonoBehaviour
 
     void Update()
     {
-        transform.Translate(Vector3.forward * speed * Time.deltaTime);
+        Move();
+    }
 
-        if (Input.GetKeyDown(KeyCode.Space))
+    void Move()
+    {
+        if (waypointIndex >= Waypoints.points.Length)
         {
-            TakeDamage(25);
+            ReachEnd();
+            return;
+        }
+
+        Transform targetPoint = Waypoints.points[waypointIndex];
+
+        Vector3 dir = targetPoint.position - transform.position;
+        transform.Translate(dir.normalized * speed * Time.deltaTime, Space.World);
+
+        // เช็คว่าถึงจุดยัง
+        if (Vector3.Distance(transform.position, targetPoint.position) < 0.2f)
+        {
+            waypointIndex++;
         }
     }
 
+    void ReachEnd()
+    {
+        Debug.Log("Enemy reached end!");
+        Destroy(gameObject);
+    }
+
+    // ===== ระบบเลือด =====
     public void TakeDamage(int damage)
     {
         currentHealth -= damage;
-
-        Debug.Log("Enemy HP: " + currentHealth);
 
         if (currentHealth <= 0)
         {
@@ -35,7 +58,6 @@ public class Enemy : MonoBehaviour
 
     void Die()
     {
-        Debug.Log("Enemy Died");
         Destroy(gameObject);
     }
 }
